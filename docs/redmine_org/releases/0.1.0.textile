@@ -1,0 +1,13 @@
+h3. redmine_expert_ui 0.1.0 — 2026-11-03
+
+h4. Added
+
+* Close button on the issue page: sets a configurable closed status and % Done 100 and saves the edit form with any note typed into it. Shown only when the workflow allows the status.
+* Automatic refresh for the issue list and My page, switched on per user and page, with a countdown. Waits while the user types, has rows selected or a dialog open; background tabs reload once shown.
+* Refresh interval per user under My account, with a default in the plugin settings.
+* Takes over the preferences of @redmine_refresh@; each feature stays off while the plugin it replaces is installed.
+* UI in English, German, Spanish, French, Italian and Portuguese (Portugal, Brazil).
+
+h4. Upgrade notes
+
+First release. No migrations. Put the plugin into @plugins/@ and restart.

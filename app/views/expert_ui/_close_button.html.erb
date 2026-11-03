@@ -1,0 +1,6 @@
+<% label = l(:button_close) %>
+<template class="expert-ui-close-button-template"><%= link_to(respond_to?(:sprite_icon) ? sprite_icon('checked', label) : label,
+  '#', :class => 'icon icon-checked expert-ui-close-button', :role => 'button',
+  :title => l(:text_expert_ui_close_title, :status => status.name)) %></template>
+<%= content_tag(:script, { :statusId => status.id, :doneRatio => 100 }.to_json.html_safe,
+                :type => 'application/json', :class => 'expert-ui-close-button-config') %>
