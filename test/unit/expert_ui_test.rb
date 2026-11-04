@@ -117,6 +117,17 @@ class RedmineExpertUiTest < ActiveSupport::TestCase
     assert_equal({ 'issues' => true, 'my' => true }, User.find(2).pref[:refresh_status])
   end
 
+  # save_refresh_state relies on Redmine saving the preference row on first
+  # access, so the row it locks always exists and a toggle never adds another.
+  def test_first_access_saves_the_preference_row
+    UserPreference.where(:user_id => 2).delete_all
+    assert User.find(2).pref.persisted?
+    RedmineExpertUi.save_refresh_state(User.find(2), 'my', true)
+    RedmineExpertUi.save_refresh_state(User.find(2), 'issues', true)
+    assert_equal 1, UserPreference.where(:user_id => 2).count
+    assert_equal({ 'issues' => true, 'my' => true }, User.find(2).pref[:refresh_status])
+  end
+
   def test_refresh_pages
     assert_equal 'issues', RedmineExpertUi.refresh_page(stub(:controller_name => 'issues', :action_name => 'index'))
     assert_equal 'my', RedmineExpertUi.refresh_page(stub(:controller_name => 'my', :action_name => 'page'))

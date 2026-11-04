@@ -102,6 +102,9 @@ module RedmineExpertUi
   # The state of every page sits in one serialized hash, so two tabs toggling
   # at once could each read the old hash and the later save would drop the
   # other page's change. The row is locked and re-read before the merge.
+  # User#pref saves a new preference on first access (has_one assignment), and
+  # every request of a logged-in user reads it before this runs, so the row to
+  # lock exists; the save below only covers a preference that failed to save.
   def save_refresh_state(user, page, on)
     pref = user.pref
     pref.save if pref.new_record?
