@@ -106,6 +106,17 @@ class RedmineExpertUiTest < ActiveSupport::TestCase
     assert_equal({ 'issues' => false, 'my' => true }, status)
   end
 
+  # Two tabs toggling at once: a request holding an older copy of the
+  # preferences must not drop the state the other request just saved.
+  def test_refresh_state_survives_a_stale_copy_of_the_preferences
+    User.find(2).pref.save!
+    stale = User.find(2)
+    stale.pref
+    RedmineExpertUi.save_refresh_state(User.find(2), 'my', true)
+    RedmineExpertUi.save_refresh_state(stale, 'issues', true)
+    assert_equal({ 'issues' => true, 'my' => true }, User.find(2).pref[:refresh_status])
+  end
+
   def test_refresh_pages
     assert_equal 'issues', RedmineExpertUi.refresh_page(stub(:controller_name => 'issues', :action_name => 'index'))
     assert_equal 'my', RedmineExpertUi.refresh_page(stub(:controller_name => 'my', :action_name => 'page'))

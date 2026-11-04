@@ -99,11 +99,17 @@ module RedmineExpertUi
     status.is_a?(Hash) && status[page.to_s].to_s == 'true'
   end
 
+  # The state of every page sits in one serialized hash, so two tabs toggling
+  # at once could each read the old hash and the later save would drop the
+  # other page's change. The row is locked and re-read before the merge.
   def save_refresh_state(user, page, on)
     pref = user.pref
-    status = pref[:refresh_status].is_a?(Hash) ? pref[:refresh_status].dup : {}
-    status[page.to_s] = on ? true : false
-    pref[:refresh_status] = status
-    pref.save
+    pref.save if pref.new_record?
+    pref.with_lock do
+      status = pref[:refresh_status].is_a?(Hash) ? pref[:refresh_status].dup : {}
+      status[page.to_s] = on ? true : false
+      pref[:refresh_status] = status
+      pref.save
+    end
   end
 end

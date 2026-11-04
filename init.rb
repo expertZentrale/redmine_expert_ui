@@ -25,7 +25,7 @@ Redmine::Plugin.register :redmine_expert_ui do
   description 'Small tweaks for everyday work: a close button on the issue page and an automatic refresh for the issue list and My page. Replaces redmine_close_button and redmine_refresh, without Deface.'
   version '0.1.0'
   url 'https://github.com/expertZentrale/redmine_expert_ui'
-  requires_redmine :version_or_higher => '5.0'
+  requires_redmine '5.0'
 
   # A key missing from the stored hash (saved by an older release) reads like
   # its default here, see RedmineExpertUi.feature_switched_on?.
