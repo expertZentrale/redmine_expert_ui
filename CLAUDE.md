@@ -17,8 +17,8 @@ rebuild with `docker-compose -f docker-compose.yml up --build`).
   the replaced plugin not installed, asked at request time because `redmine_refresh` registers
   after us), `close_status` (configured closed status or the first closed one),
   `close_button_status(issue, user)` (nil unless open, `attributes_editable?` and the workflow
-  allows it), refresh interval and per-page on/off state (saved under a row lock, so two
-  tabs toggling at once do not drop each other's change).
+  allows it), refresh interval and per-page on/off state (saved under a lock on the user's
+  row, so two tabs toggling at once do not drop each other's change).
 - `lib/redmine_expert_ui/hooks.rb` – `view_layouts_base_html_head` loads the stylesheet plus one
   script only where needed (`issues#show`: close button; `issues#index` / `my#page`: refresh, with
   its `<template>` link and JSON island `#expert-ui-auto-refresh-config`);

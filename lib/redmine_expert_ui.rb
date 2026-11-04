@@ -101,14 +101,16 @@ module RedmineExpertUi
 
   # The state of every page sits in one serialized hash, so two tabs toggling
   # at once could each read the old hash and the later save would drop the
-  # other page's change. The row is locked and re-read before the merge.
-  # User#pref saves a new preference on first access (has_one assignment), and
-  # every request of a logged-in user reads it before this runs, so the row to
-  # lock exists; the save below only covers a preference that failed to save.
+  # other page's change. Locking the user's row serialises their toggles, and
+  # the preference is re-read under that lock. User#pref normally saves a new
+  # preference on first access already; a request still holding an unsaved one
+  # looks the row up under the lock, so first toggles never add a second row
+  # (user_id is not unique in that table).
   def save_refresh_state(user, page, on)
-    pref = user.pref
-    pref.save if pref.new_record?
-    pref.with_lock do
+    UserPreference.transaction do
+      User.where(:id => user.id).lock.pluck(:id)
+      pref = user.pref
+      pref = pref.persisted? ? pref.reload : (UserPreference.find_by(:user_id => user.id) || pref)
       status = pref[:refresh_status].is_a?(Hash) ? pref[:refresh_status].dup : {}
       status[page.to_s] = on ? true : false
       pref[:refresh_status] = status

@@ -128,6 +128,19 @@ class RedmineExpertUiTest < ActiveSupport::TestCase
     assert_equal({ 'issues' => true, 'my' => true }, User.find(2).pref[:refresh_status])
   end
 
+  # A request still holding a preference Redmine has not saved merges into the
+  # row another request created instead of adding a second one.
+  def test_an_unsaved_preference_merges_into_the_existing_row
+    UserPreference.where(:user_id => 2).delete_all
+    stale = User.find(2)
+    stale.association(:preference).target = UserPreference.new(:user_id => 2)
+    assert stale.pref.new_record?
+    RedmineExpertUi.save_refresh_state(User.find(2), 'my', true)
+    RedmineExpertUi.save_refresh_state(stale, 'issues', true)
+    assert_equal 1, UserPreference.where(:user_id => 2).count
+    assert_equal({ 'issues' => true, 'my' => true }, User.find(2).pref[:refresh_status])
+  end
+
   def test_refresh_pages
     assert_equal 'issues', RedmineExpertUi.refresh_page(stub(:controller_name => 'issues', :action_name => 'index'))
     assert_equal 'my', RedmineExpertUi.refresh_page(stub(:controller_name => 'my', :action_name => 'page'))
