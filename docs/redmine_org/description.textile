@@ -1,0 +1,18 @@
+Small tweaks for everyday work in Redmine, each with its own switch: a *Close button* on the issue page and an *automatic refresh* for the issue list and My page. Replaces @redmine_close_button@ and @redmine_refresh@, keeps every user's refresh settings, and needs neither Deface nor copied core code.
+
+h3. Features
+
+* *Close button:* next to _Edit_ in the issue page's action bars. One click sets a configurable closed status and % Done 100 and saves; a note typed into the edit form goes along. Shown only while the issue is open, editable and the workflow allows the status.
+* *Automatic refresh:* a link on the issue list and on My page that counts down and reloads the page, switched on per user and page. It waits while the user types, has rows selected or has a dialog open; background tabs reload once shown again.
+* *Interval per user* under My account (at least 10 seconds), with a default in the plugin settings.
+* *Moving over:* each feature stays off while the plugin it replaces is installed; users keep the interval and on/off state @redmine_refresh@ stored.
+
+h3. Languages
+
+User interface in English, German, Spanish, French, Italian and Portuguese (Portugal and Brazil); other languages fall back to English. Documentation in English and German.
+
+h3. Requirements
+
+Redmine 5.1, 6.0, 6.1 or 7.0. No migrations, no extra gems.
+
+Source, documentation and issue tracker: "github.com/expertZentrale/redmine_expert_ui":https://github.com/expertZentrale/redmine_expert_ui

@@ -1,0 +1,19 @@
+<%
+  interval = RedmineExpertUi.interval_for(user)
+  config = {
+    :page => page,
+    :enabled => RedmineExpertUi.refresh_on?(user, page),
+    :interval => interval,
+    :url => expert_ui_auto_refresh_path,
+    :labels => {
+      :off => l(:label_expert_ui_auto_refresh),
+      :on => l(:label_expert_ui_refresh_in, :seconds => '%{seconds}'),
+      :titleOff => l(:text_expert_ui_auto_refresh_switch_on, :seconds => interval),
+      :titleOn => l(:text_expert_ui_auto_refresh_switch_off)
+    }
+  }
+  label = l(:label_expert_ui_auto_refresh)
+%>
+<template id="expert-ui-auto-refresh-template"><%= link_to(respond_to?(:sprite_icon) ? sprite_icon('reload', label) : content_tag(:span, label, :class => 'icon-label'),
+  '#', :class => 'icon icon-reload expert-ui-auto-refresh', :role => 'button', :'aria-pressed' => 'false') %></template>
+<%= content_tag(:script, config.to_json.html_safe, :type => 'application/json', :id => 'expert-ui-auto-refresh-config') %>

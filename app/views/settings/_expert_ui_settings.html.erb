@@ -1,0 +1,43 @@
+<% default_status = RedmineExpertUi.closed_statuses.first %>
+<fieldset class="box tabular" id="expert-ui-close-button-settings">
+  <legend><%= l(:label_expert_ui_close_button) %></legend>
+  <% if RedmineExpertUi.legacy_plugin_installed?('close_button') %>
+    <p class="expert-ui-legacy"><%= l(:text_expert_ui_legacy_installed, :plugin => RedmineExpertUi.legacy_plugin('close_button')) %></p>
+  <% end %>
+  <p>
+    <%= hidden_field_tag 'settings[close_button_enabled]', '0', :id => nil %>
+    <label for="settings_close_button_enabled"><%= l(:field_expert_ui_close_button_enabled) %></label>
+    <%= check_box_tag 'settings[close_button_enabled]', '1', RedmineExpertUi.feature_switched_on?('close_button'),
+                      :id => 'settings_close_button_enabled' %>
+    <em class="info"><%= l(:text_expert_ui_close_button_info) %></em>
+  </p>
+  <p>
+    <label for="settings_close_button_status_id"><%= l(:field_expert_ui_close_button_status) %></label>
+    <%= select_tag 'settings[close_button_status_id]',
+                   options_for_select([[l(:text_expert_ui_close_button_status_default, :status => default_status.try(:name) || '-'), '']] +
+                                        RedmineExpertUi.closed_statuses.map { |status| [status.name, status.id.to_s] },
+                                      settings['close_button_status_id'].to_s),
+                   :id => 'settings_close_button_status_id' %>
+  </p>
+</fieldset>
+
+<fieldset class="box tabular" id="expert-ui-auto-refresh-settings">
+  <legend><%= l(:label_expert_ui_auto_refresh) %></legend>
+  <% if RedmineExpertUi.legacy_plugin_installed?('auto_refresh') %>
+    <p class="expert-ui-legacy"><%= l(:text_expert_ui_legacy_installed, :plugin => RedmineExpertUi.legacy_plugin('auto_refresh')) %></p>
+  <% end %>
+  <p>
+    <%= hidden_field_tag 'settings[auto_refresh_enabled]', '0', :id => nil %>
+    <label for="settings_auto_refresh_enabled"><%= l(:field_expert_ui_auto_refresh_enabled) %></label>
+    <%= check_box_tag 'settings[auto_refresh_enabled]', '1', RedmineExpertUi.feature_switched_on?('auto_refresh'),
+                      :id => 'settings_auto_refresh_enabled' %>
+    <em class="info"><%= l(:text_expert_ui_auto_refresh_info) %></em>
+  </p>
+  <p>
+    <label for="settings_auto_refresh_default_interval"><%= l(:field_expert_ui_auto_refresh_default_interval) %></label>
+    <%= number_field_tag 'settings[auto_refresh_default_interval]', RedmineExpertUi.default_interval,
+                         :id => 'settings_auto_refresh_default_interval', :min => RedmineExpertUi::MIN_INTERVAL,
+                         :step => 1, :style => 'width: 6em;' %>
+    <%= l(:label_expert_ui_seconds) %>
+  </p>
+</fieldset>

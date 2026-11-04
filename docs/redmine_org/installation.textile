@@ -1,0 +1,41 @@
+h3. Requirements
+
+* Redmine 5.1.x, 6.0.x, 6.1.x or 7.0.x
+* No extra gems, no migrations
+
+Every release is tested against Redmine 5.1, 6.0, 6.1 and 7.0 on a clean MariaDB, and additionally booted inside the official @redmine@ Docker images for the same versions.
+
+h3. 1. Install the plugin
+
+Download @redmine_expert_ui-<version>.zip@ (or @.tar.gz@) from the "Releases":https://github.com/expertZentrale/redmine_expert_ui/releases page. The archive already contains a top-level @redmine_expert_ui/@ folder, so extract it directly into your Redmine @plugins/@ directory:
+
+<pre>
+cd /path/to/redmine/plugins
+unzip redmine_expert_ui-<version>.zip
+</pre>
+
+Alternatively, from source:
+
+<pre>
+cd /path/to/redmine/plugins
+git clone https://github.com/expertZentrale/redmine_expert_ui.git
+</pre>
+
+Then restart Redmine.
+
+h3. 2. Settings
+
+_Administration » Plugins » Redmine expert UI » Configure_: switch each feature on or off, pick the closed status the button sets (default: the first closed status) and the default refresh interval. Users set their own interval under _My account_.
+
+h3. 3. Optional: coming from redmine_close_button and redmine_refresh
+
+Both can stay installed at first; the matching feature here stays off until they are gone.
+
+# Remove @plugins/redmine_close_button@ and @plugins/redmine_refresh@ (and @plugins/redmine_base_deface@ with the @deface@ gem, if nothing else needs them) and restart.
+# Pick the button's status in the settings. @redmine_close_button@ always set the status with id 5.
+
+Users keep the refresh interval and on/off state @redmine_refresh@ stored.
+
+h3. Upgrade
+
+Replace the plugin directory and restart.

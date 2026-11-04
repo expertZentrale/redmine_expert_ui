@@ -1,0 +1,8 @@
+<p>
+  <%= label_tag 'pref_refresh_interval', l(:field_expert_ui_refresh_interval) %>
+  <%= number_field_tag 'pref[refresh_interval]', user.pref.refresh_interval,
+                       :id => 'pref_refresh_interval', :min => RedmineExpertUi::MIN_INTERVAL, :step => 1,
+                       :placeholder => RedmineExpertUi.default_interval, :style => 'width: 6em;' %>
+  <em class="info"><%= l(:text_expert_ui_refresh_interval_info, :min => RedmineExpertUi::MIN_INTERVAL,
+                         :interval => RedmineExpertUi.default_interval) %></em>
+</p>

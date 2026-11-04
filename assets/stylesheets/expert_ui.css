@@ -1,0 +1,7 @@
+/* redmine_expert_ui. Scoped to .expert-ui-* class names. */
+
+/* Automatic refresh: the countdown keeps its width while the digits change. */
+.expert-ui-auto-refresh .icon-label { font-variant-numeric: tabular-nums; }
+
+/* Close button: one click only. */
+.expert-ui-close-button.disabled { opacity: 0.5; pointer-events: none; cursor: default; }
