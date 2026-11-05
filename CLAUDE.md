@@ -66,7 +66,8 @@ is an integration test that switches it on after signing in.
 
 ## CI
 
-- `.github/workflows/ci.yml` – plugin tests against Redmine 5.1/6.0/6.1/7.0-stable on MariaDB.
+- `.github/workflows/ci.yml` – plugin tests against Redmine 5.1/6.0/6.1/7.0-stable on MariaDB,
+  5.1 and 7.0 also on MySQL 8.4 and PostgreSQL 17 (the database starts in a step per matrix entry).
 - `.github/workflows/docker-image.yml` – official `redmine:*` images with the plugin mounted; signs
   in as admin (password set with `rails runner` in a one-off container) and checks that the issue
   list and My page link the script and stylesheet and that both are served.

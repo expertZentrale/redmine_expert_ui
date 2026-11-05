@@ -87,8 +87,9 @@ Keine Migrationen, keine zusätzlichen Gems.
 bundle exec rake redmine:plugins:test NAME=redmine_expert_ui RAILS_ENV=test
 ```
 
-Die CI führt sie gegen Redmine 5.1, 6.0, 6.1 und 7.0 auf MariaDB aus. Außerdem startet sie die
-offiziellen Redmine-Docker-Images mit eingebundenem Plugin und prüft Ticketliste und „Meine Seite“.
+Die CI führt sie gegen Redmine 5.1, 6.0, 6.1 und 7.0 auf MariaDB aus, gegen 5.1 und 7.0 zusätzlich
+auf MySQL und PostgreSQL. Außerdem startet sie die offiziellen Redmine-Docker-Images mit
+eingebundenem Plugin und prüft Ticketliste und „Meine Seite“.
 
 ## Lizenz
 
