@@ -6,6 +6,24 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-20
+
+### Hinzugefügt
+
+- Theme pro Benutzer: ein Feld „Theme“ unter „Mein Konto“ (und im Benutzerformular für
+  Administratoren). Stylesheets, Bilder, Favicon, Icons und das JavaScript des Themes folgen der
+  Wahl des Benutzers; wer nichts wählt, behält das globale Theme, ebenso anonyme Seiten wie die
+  Anmeldeseite.
+- Plugin-Einstellungen dazu: ein Schalter und eine Liste der angebotenen Themes (keines angehakt:
+  alle installierten). Eine Wahl, die nicht mehr installiert ist oder nicht mehr angeboten wird,
+  fällt auf das globale Theme zurück.
+- Abbrechen-Schutz: Würde „Abbrechen“ unter dem Ticketformular (auch für Helpdesk-Antworten) oder
+  unter einer bearbeiteten Notiz geänderten Text verwerfen, wird vorher nachgefragt. Pro Projekt
+  über das Modul „Abbrechen-Schutz“ aktiviert, kein globaler Schalter. Varianten: Bestätigen
+  (Standard), Ausweichen, Zum Abbrechen schieben, Auskippen, Gedrückt halten, Schredder und Zufall.
+  Die Plugin-Einstellungen legen die Standardvariante fest, Benutzer wählen ihre eigene unter
+  „Mein Konto“. Bei reduzierter Bewegung zeigen die animierten Varianten stattdessen den Dialog.
+
 ### Geändert
 
 - **Die Tests laufen auch auf MySQL und PostgreSQL.** Die CI führt die Suite für jede unterstützte

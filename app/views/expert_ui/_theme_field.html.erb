@@ -1,0 +1,10 @@
+<%
+  global = RedmineExpertUi.global_theme
+  options = [[l(:text_expert_ui_theme_default, :theme => global ? global.name : l(:label_default)), '']] +
+            RedmineExpertUi.selectable_themes.map { |theme| [theme.name, theme.id] }
+%>
+<p>
+  <%= label_tag 'pref_expert_ui_theme', l(:field_expert_ui_theme) %>
+  <%= select_tag 'pref[expert_ui_theme]', options_for_select(options, user.pref.expert_ui_theme.to_s),
+                 :id => 'pref_expert_ui_theme' %>
+</p>

@@ -41,3 +41,43 @@
     <%= l(:label_expert_ui_seconds) %>
   </p>
 </fieldset>
+
+<fieldset class="box tabular" id="expert-ui-user-theme-settings">
+  <legend><%= l(:label_expert_ui_user_theme) %></legend>
+  <p>
+    <%= hidden_field_tag 'settings[user_theme_enabled]', '0', :id => nil %>
+    <label for="settings_user_theme_enabled"><%= l(:field_expert_ui_user_theme_enabled) %></label>
+    <%= check_box_tag 'settings[user_theme_enabled]', '1', RedmineExpertUi.feature_switched_on?('user_theme'),
+                      :id => 'settings_user_theme_enabled' %>
+    <em class="info"><%= l(:text_expert_ui_user_theme_info) %></em>
+  </p>
+  <p>
+    <label><%= l(:field_expert_ui_user_theme_choices) %></label>
+    <%= hidden_field_tag 'settings[user_theme_choices][]', '', :id => nil %>
+    <% Redmine::Themes.themes.each do |theme| %>
+      <label class="block">
+        <%= check_box_tag 'settings[user_theme_choices][]', theme.id, RedmineExpertUi.allowed_theme_ids.include?(theme.id),
+                          :id => "settings_user_theme_choices_#{theme.id.parameterize}" %>
+        <%= theme.name %>
+      </label>
+    <% end %>
+    <em class="info"><%= l(:text_expert_ui_user_theme_choices_info) %></em>
+  </p>
+</fieldset>
+
+<fieldset class="box tabular" id="expert-ui-cancel-guard-settings">
+  <legend><%= l(:label_expert_ui_cancel_guard) %></legend>
+  <p>
+    <label><%= l(:label_project_plural) %></label>
+    <%= l(:text_expert_ui_cancel_guard_info, :module => l(:project_module_expert_ui_cancel_guard),
+          :count => EnabledModule.where(:name => RedmineExpertUi::CANCEL_GUARD_MODULE.to_s).count) %>
+  </p>
+  <p>
+    <label for="settings_cancel_guard_style"><%= l(:field_expert_ui_cancel_guard_default_style) %></label>
+    <%= select_tag 'settings[cancel_guard_style]',
+                   options_for_select(RedmineExpertUi::CANCEL_GUARD_STYLES.map { |style| [l("label_expert_ui_cancel_guard_style_#{style}"), style] },
+                                      RedmineExpertUi.cancel_guard_default_style),
+                   :id => 'settings_cancel_guard_style' %>
+    <em class="info"><%= l(:text_expert_ui_cancel_guard_styles_info) %></em>
+  </p>
+</fieldset>

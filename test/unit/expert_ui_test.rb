@@ -146,4 +146,122 @@ class RedmineExpertUiTest < ActiveSupport::TestCase
     assert_equal 'my', RedmineExpertUi.refresh_page(stub(:controller_name => 'my', :action_name => 'page'))
     assert_nil RedmineExpertUi.refresh_page(stub(:controller_name => 'issues', :action_name => 'show'))
   end
+
+  # --- Theme per user ---
+
+  def test_theme_is_the_global_one_without_a_choice
+    with_settings :ui_theme => '' do
+      assert_nil RedmineExpertUi.theme_for(User.find(2))
+    end
+    with_settings :ui_theme => any_theme.id do
+      assert_equal any_theme, RedmineExpertUi.theme_for(User.find(2))
+    end
+  end
+
+  def test_theme_is_the_users_choice
+    user = User.find(2)
+    choose_theme(user, any_theme)
+    with_settings :ui_theme => '' do
+      assert_equal any_theme, RedmineExpertUi.theme_for(user)
+      assert_nil RedmineExpertUi.theme_for(User.find(3))
+      assert_nil RedmineExpertUi.theme_for(User.anonymous)
+    end
+  end
+
+  def test_theme_choice_is_ignored_while_switched_off
+    user = User.find(2)
+    choose_theme(user, any_theme)
+    with_settings :ui_theme => '' do
+      with_ui_settings('user_theme_enabled' => '0') do
+        assert_nil RedmineExpertUi.theme_for(user)
+      end
+    end
+  end
+
+  def test_theme_choice_must_be_on_offer
+    user = User.find(2)
+    choose_theme(user, any_theme)
+    with_settings :ui_theme => '' do
+      with_ui_settings('user_theme_choices' => ['', 'no-such-theme']) do
+        assert_equal [], RedmineExpertUi.selectable_themes
+        assert_nil RedmineExpertUi.theme_for(user)
+      end
+      with_ui_settings('user_theme_choices' => ['', any_theme.id]) do
+        assert_equal [any_theme], RedmineExpertUi.selectable_themes
+        assert_equal any_theme, RedmineExpertUi.theme_for(user)
+      end
+    end
+  end
+
+  # Settings saved before the key existed, or with nothing ticked.
+  def test_every_theme_is_on_offer_without_a_selection
+    [nil, [], ['']].each do |stored|
+      with_ui_settings('user_theme_choices' => stored) do
+        assert_equal Redmine::Themes.themes, RedmineExpertUi.selectable_themes
+      end
+    end
+  end
+
+  def test_theme_accessor_keeps_installed_themes_only
+    pref = User.find(2).pref
+    pref.expert_ui_theme = any_theme.id
+    assert_equal any_theme.id, pref.expert_ui_theme
+    pref.expert_ui_theme = 'no-such-theme'
+    assert_nil pref.expert_ui_theme
+    pref.expert_ui_theme = any_theme.id
+    pref.expert_ui_theme = ''
+    assert_nil pref.expert_ui_theme
+    assert_nil pref[:expert_ui_theme]
+  end
+
+  def test_cancel_guard_runs_only_in_projects_with_its_module
+    project = Project.find(1)
+    assert_not RedmineExpertUi.cancel_guard_for?(project)
+    assert_not RedmineExpertUi.cancel_guard_in_use?
+    enable_cancel_guard(project.id)
+    assert RedmineExpertUi.cancel_guard_for?(project.reload)
+    assert_not RedmineExpertUi.cancel_guard_for?(Project.find(2))
+    assert_not RedmineExpertUi.cancel_guard_for?(nil)
+    assert RedmineExpertUi.cancel_guard_in_use?
+  end
+
+  def test_the_module_is_offered_to_projects
+    assert_includes Redmine::AccessControl.available_project_modules, RedmineExpertUi::CANCEL_GUARD_MODULE
+    permission = Redmine::AccessControl.permission(:expert_ui_cancel_guard)
+    assert permission.public?
+    assert_not_includes Role.find(1).setable_permissions.map(&:name), :expert_ui_cancel_guard
+  end
+
+  def test_cancel_guard_style_prefers_the_users_choice_then_the_setting
+    user = User.find(2)
+    with_ui_settings('cancel_guard_style' => 'slider') do
+      assert_equal 'slider', RedmineExpertUi.cancel_guard_style(user)
+      choose_cancel_guard_style(user, 'shredder')
+      assert_equal 'shredder', RedmineExpertUi.cancel_guard_style(user.reload)
+      assert_equal 'slider', RedmineExpertUi.cancel_guard_style(User.anonymous)
+    end
+  end
+
+  # Settings saved before the key existed, or holding a style that is gone.
+  def test_cancel_guard_style_falls_back_to_confirm
+    [nil, '', 'teleport'].each do |stored|
+      with_ui_settings('cancel_guard_style' => stored) do
+        assert_equal 'confirm', RedmineExpertUi.cancel_guard_default_style
+        assert_equal 'confirm', RedmineExpertUi.cancel_guard_style(User.find(2))
+      end
+    end
+  end
+
+  def test_cancel_guard_style_accessor_keeps_known_styles_only
+    pref = User.find(2).pref
+    RedmineExpertUi::CANCEL_GUARD_STYLES.each do |style|
+      pref.expert_ui_cancel_guard_style = style
+      assert_equal style, pref.expert_ui_cancel_guard_style
+    end
+    pref.expert_ui_cancel_guard_style = 'teleport'
+    assert_nil pref.expert_ui_cancel_guard_style
+    pref.expert_ui_cancel_guard_style = 'hold'
+    pref.expert_ui_cancel_guard_style = ''
+    assert_nil pref[:expert_ui_cancel_guard_style]
+  end
 end

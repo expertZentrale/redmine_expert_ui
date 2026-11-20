@@ -5,3 +5,123 @@
 
 /* Close button: one click only. */
 .expert-ui-close-button.disabled { opacity: 0.5; pointer-events: none; cursor: default; }
+
+/* Cancel guard. Neutral, half-transparent colours so light and dark themes
+   both work; the shredder copies the textarea's own colours. */
+.expert-ui-cg-hidden { display: none !important; }
+
+.expert-ui-cg-bubble {
+  position: absolute; z-index: 10000; max-width: 20em; padding: 4px 10px; border-radius: 6px;
+  background: #333; color: #fff; font-size: 0.9em; line-height: 1.4; pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); animation: expert-ui-cg-pop 0.18s ease-out;
+}
+@keyframes expert-ui-cg-pop { from { opacity: 0; transform: translateY(4px) scale(0.9); } to { opacity: 1; transform: none; } }
+
+.expert-ui-cg-dialog-wrap .expert-ui-cg-discard { color: #c62828; }
+
+/* Dodge: transforms need a box, so the link becomes inline-block meanwhile. */
+.expert-ui-cg-dodging {
+  display: inline-block; position: relative; z-index: 5;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slider: a track with the range input on top, the hint text behind. */
+.expert-ui-cg-slider {
+  display: inline-flex; position: relative; align-items: center; vertical-align: middle;
+  width: 15em; max-width: 100%; height: 2.2em; margin-left: 4px; border-radius: 1.1em; overflow: hidden;
+  background: rgba(128, 128, 128, 0.15); border: 1px solid rgba(128, 128, 128, 0.45);
+}
+.expert-ui-cg-slider-label {
+  position: absolute; left: 2.4em; right: 0.8em; text-align: center; font-size: 0.9em;
+  opacity: 1; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.expert-ui-cg-slider input[type="range"] {
+  -webkit-appearance: none; appearance: none; position: relative; width: 100%; height: 100%;
+  margin: 0; padding: 0 2px; background: transparent; cursor: grab; box-sizing: border-box;
+}
+.expert-ui-cg-slider input[type="range"]:active { cursor: grabbing; }
+.expert-ui-cg-slider input[type="range"]::-webkit-slider-runnable-track { background: transparent; height: 100%; }
+.expert-ui-cg-slider input[type="range"]::-moz-range-track { background: transparent; }
+.expert-ui-cg-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 1.9em; height: 1.9em; margin-top: 0.1em; border-radius: 50%;
+  background: #c62828; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.expert-ui-cg-slider input[type="range"]::-moz-range-thumb {
+  width: 1.7em; height: 1.7em; border-radius: 50%; background: #c62828; border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.expert-ui-cg-slider input[type="range"]:focus-visible { outline: 2px solid #1e88e5; outline-offset: -2px; border-radius: 1.1em; }
+
+/* Pour: the link becomes a full glass; held down, it tips over and runs dry,
+   let go and it stands up and fills again. */
+.expert-ui-cg-glass {
+  user-select: none; -webkit-user-select: none; touch-action: none;
+  display: inline-block; position: relative; z-index: 5; padding: 2px 8px; isolation: isolate;
+  border: 2px solid rgba(128, 128, 128, 0.6); border-top-color: transparent; border-radius: 0 0 8px 8px;
+  transform-origin: 100% 100%; transition: transform 0.5s ease-in-out;
+}
+.expert-ui-cg-liquid {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 100%; z-index: -1; border-radius: 0 0 6px 6px;
+  background: linear-gradient(180deg, rgba(66, 165, 245, 0.85), rgba(21, 101, 192, 0.85));
+  transition: height 0.4s ease-out;
+}
+.expert-ui-cg-glass.expert-ui-cg-pouring { transform: rotate(105deg); }
+.expert-ui-cg-glass.expert-ui-cg-pouring .expert-ui-cg-liquid { height: 0; transition: height 2s linear 0.5s; }
+.expert-ui-cg-spill { position: absolute; z-index: 9000; width: 0; height: 0; pointer-events: none; }
+.expert-ui-cg-drop {
+  position: absolute; top: 0; width: 6px; height: 9px; margin-left: -3px; opacity: 0;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: rgba(30, 136, 229, 0.85);
+}
+.expert-ui-cg-spill.expert-ui-cg-pouring .expert-ui-cg-drop { animation: expert-ui-cg-drip 0.6s ease-in 3; }
+@keyframes expert-ui-cg-drip {
+  0% { opacity: 1; transform: translateY(-4px); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(34px) scaleY(1.4); }
+}
+.expert-ui-cg-puddle {
+  position: absolute; top: 38px; left: 0; width: 0; height: 7px; border-radius: 50%;
+  background: rgba(30, 136, 229, 0.55); transform: translateX(-50%); transition: width 0.4s ease-out;
+}
+.expert-ui-cg-spill.expert-ui-cg-pouring .expert-ui-cg-puddle { width: 80px; transition: width 2s ease-out 0.6s; }
+
+/* Hold: a bar under the link fills while it is pressed. */
+.expert-ui-cg-hold { display: inline-block; position: relative; padding-bottom: 3px; }
+.expert-ui-cg-hold-bar {
+  position: absolute; left: 0; bottom: 0; width: 0; height: 3px; border-radius: 2px; background: #c62828;
+  transition: width 0.15s ease-out;
+}
+.expert-ui-cg-holding { user-select: none; -webkit-user-select: none; }
+.expert-ui-cg-holding .expert-ui-cg-hold-bar { width: 100%; transition: width 1.5s linear; }
+
+/* Shredder: strips of the text fall out of the textarea's box. */
+.expert-ui-cg-shredder { position: absolute; z-index: 9000; overflow: hidden; border-radius: 3px; }
+.expert-ui-cg-blade {
+  position: absolute; left: 0; right: 0; top: 0; height: 10px; z-index: 2;
+  background: repeating-linear-gradient(90deg, #555 0 6px, #888 6px 9px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.expert-ui-cg-paper { position: absolute; inset: 0; }
+.expert-ui-cg-strip {
+  position: absolute; inset: 0; box-sizing: border-box; overflow: hidden; white-space: pre-wrap;
+  word-wrap: break-word; animation: expert-ui-cg-shred 1.8s ease-in forwards;
+}
+@keyframes expert-ui-cg-shred {
+  0% { transform: none; opacity: 1; }
+  15% { transform: translateY(6px); }
+  100% { transform: translate(var(--expert-ui-cg-drift, 0), 115%) rotate(var(--expert-ui-cg-turn, 0)); opacity: 0.2; }
+}
+.expert-ui-cg-shredder-panel {
+  position: absolute; left: 50%; top: 50%; z-index: 3; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75); color: #fff; text-align: center;
+}
+.expert-ui-cg-stop {
+  font-size: 1.3em; font-weight: bold; padding: 6px 22px; border: 0; border-radius: 6px; cursor: pointer;
+  background: #c62828; color: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.expert-ui-cg-stop:hover, .expert-ui-cg-stop:focus-visible { background: #e53935; outline: 2px solid #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .expert-ui-cg-bubble { animation: none; }
+  .expert-ui-cg-slider-label { transition: none; }
+}

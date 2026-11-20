@@ -25,7 +25,9 @@ Then restart Redmine.
 
 h3. 2. Settings
 
-_Administration » Plugins » Redmine expert UI » Configure_: switch each feature on or off, pick the closed status the button sets (default: the first closed status) and the default refresh interval. Users set their own interval under _My account_.
+_Administration » Plugins » Redmine expert UI » Configure_: switch each feature on or off, pick the closed status the button sets (default: the first closed status) and the default refresh interval, tick the themes users may pick, and choose the default style of the cancel guard. Users set their own interval, theme and cancel guard style under _My account_.
+
+The cancel guard is switched on per project: _Project » Settings » Modules » Cancel guard_.
 
 h3. 3. Optional: coming from redmine_close_button and redmine_refresh
 

@@ -1,0 +1,11 @@
+h3. redmine_expert_ui 0.2.0 — 2026-11-20
+
+h4. Added
+
+* Theme per user: a _Theme_ field under My account (and in the admin's user form). Users who choose nothing keep the global theme, so a new theme can be offered without moving everyone at once. Anonymous pages such as the login page keep the global theme.
+* Settings: a switch for the feature and the list of themes on offer (none ticked: every installed theme).
+* Cancel guard: when _Cancel_ under the issue form (also used for helpdesk replies) or under an edited note would throw away changed text, it asks first. Switched on per project with the module _Cancel guard_. Styles: confirm (default), dodge, slide to cancel, pour out, press and hold, shredder and surprise me; the default is set in the plugin settings, users pick their own under My account.
+
+h4. Upgrade notes
+
+No migrations. Replace the plugin directory and restart. Nothing changes for users until they pick a theme, and the cancel guard stays off until a project enables its module.
