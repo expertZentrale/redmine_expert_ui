@@ -1,4 +1,4 @@
-h3. redmine_expert_ui 0.2.0 — 2026-11-19
+h3. redmine_expert_ui 0.2.0 — 2026-11-20
 
 h4. Added
 
