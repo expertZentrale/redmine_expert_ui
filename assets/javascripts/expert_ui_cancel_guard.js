@@ -32,6 +32,7 @@
   var bypass = false;    // set while the agreed Cancel click runs
   var session = null;    // the running challenge
   var swallow = null;    // link whose next click is the tail of a finished hold
+  var picked = null;     // {link, style} chosen at the press, kept for its click
   var bubble = null;
 
   function readConfig() {
@@ -139,6 +140,7 @@
       }
     };
     session = s;
+    picked = null;
     STYLES[style](s);
     return s;
   }
@@ -484,20 +486,30 @@
     if (!hit || changedTextareas(hit.form).length === 0) { return; }
     event.preventDefault();
     event.stopImmediatePropagation();
-    var s = start(hit, pickStyle());
+    var s = start(hit, styleFor(hit));
     if (s.press) { say(s.link, s.hint, 1800); }
   }, true);
 
+  // The style for this attempt, chosen once: the press (pointer or key) comes
+  // before the click, and with 'random' both must see the same choice.
+  function styleFor(hit) {
+    if (!picked || picked.link !== hit.link) { picked = { link: hit.link, style: pickStyle() }; }
+    return picked.style;
+  }
+
+  function pressStyle(style) {
+    return style === 'hold' || style === 'pour';
+  }
+
   // Hold and pour: pressing the link starts them, even as the very first
-  // action ('random' picks only once the click comes).
+  // action and with 'random' picking one of them.
   document.addEventListener('pointerdown', function (event) {
     if (!cfg || event.button !== 0) { return; }
     var hit = guardedLink(event.target);
     if (!hit) { return; }
     if (swallow === hit.link) { swallow = null; }
-    if (!session && (cfg.style === 'hold' || cfg.style === 'pour') && changedTextareas(hit.form).length > 0) {
-      var style = pickStyle();
-      if (style === 'hold' || style === 'pour') { start(hit, style); }
+    if (!session && changedTextareas(hit.form).length > 0 && pressStyle(styleFor(hit))) {
+      start(hit, styleFor(hit));
     }
     if (session && session.link === hit.link && session.press) {
       session.press();
@@ -520,14 +532,20 @@
   }, true);
 
   document.addEventListener('keydown', function (event) {
-    if (!session || session.done) { return; }
-    if (event.key === 'Escape' || event.key === 'Esc') {
+    if (!cfg) { return; }
+    if (session && !session.done && (event.key === 'Escape' || event.key === 'Esc')) {
       session.finish(false);
       return;
     }
-    // Hold with Enter or Space on the focused link; prevent the click that
-    // Enter would trigger at once.
-    if (session.press && event.target === session.link && (event.key === 'Enter' || event.key === ' ')) {
+    if (event.key !== 'Enter' && event.key !== ' ') { return; }
+    var hit = guardedLink(event.target);
+    if (!hit || hit.link !== event.target) { return; }
+    // Hold with Enter or Space on the focused link, from the first key press
+    // on; the click Enter would trigger at once is prevented.
+    if (!session && !event.repeat && changedTextareas(hit.form).length > 0 && pressStyle(styleFor(hit))) {
+      start(hit, styleFor(hit));
+    }
+    if (session && !session.done && session.press && session.link === hit.link) {
       event.preventDefault();
       event.stopImmediatePropagation();
       if (!event.repeat) { session.press(); }
