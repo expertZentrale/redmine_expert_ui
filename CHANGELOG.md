@@ -21,6 +21,12 @@
   press and hold, shredder and surprise me. The plugin settings set the default style, users pick
   their own under *My account*. With reduced motion, the animated styles show the dialog instead.
 
+### Changed
+
+- **The tests also run on MySQL and PostgreSQL.** CI runs the suite on MariaDB for every supported
+  Redmine version and, for the oldest and the newest (5.1 and 7.0), on MySQL 8.4 and PostgreSQL 17
+  as well.
+
 ## [0.1.0] - 2026-11-03
 
 ### Added
