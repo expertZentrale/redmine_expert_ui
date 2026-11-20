@@ -1,0 +1,13 @@
+<%
+  default_style = RedmineExpertUi.cancel_guard_default_style
+  options = [[l(:text_expert_ui_cancel_guard_style_default,
+                :style => l("label_expert_ui_cancel_guard_style_#{default_style}")), '']] +
+            RedmineExpertUi::CANCEL_GUARD_STYLES.map { |style| [l("label_expert_ui_cancel_guard_style_#{style}"), style] }
+%>
+<p>
+  <%= label_tag 'pref_expert_ui_cancel_guard_style', l(:field_expert_ui_cancel_guard_style) %>
+  <%= select_tag 'pref[expert_ui_cancel_guard_style]',
+                 options_for_select(options, user.pref.expert_ui_cancel_guard_style.to_s),
+                 :id => 'pref_expert_ui_cancel_guard_style' %>
+  <em class="info"><%= l(:text_expert_ui_cancel_guard_style_info) %></em>
+</p>

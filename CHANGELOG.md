@@ -6,6 +6,21 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-19
+
+### Added
+
+- Theme per user: a *Theme* field under *My account* (and in the admin's user form). Stylesheets,
+  images, favicon, icons and the theme's JavaScript follow the user's choice; users who choose
+  nothing keep the global theme, as do anonymous pages such as the login page.
+- Plugin settings for it: a switch, and a list of the themes on offer (none ticked: every installed
+  theme). A choice that is no longer installed or on offer falls back to the global theme.
+- Cancel guard: when *Cancel* under the issue form (also used for helpdesk replies) or under an
+  edited note would throw away changed text, it asks first. Switched on per project with the module
+  *Cancel guard*; no global switch. Styles: confirm (default), dodge, slide to cancel, pour out,
+  press and hold, shredder and surprise me. The plugin settings set the default style, users pick
+  their own under *My account*. With reduced motion, the animated styles show the dialog instead.
+
 ## [0.1.0] - 2026-11-03
 
 ### Added

@@ -6,7 +6,7 @@
 # removed afterwards.
 module RedmineExpertUi
   PLUGIN_ID = :redmine_expert_ui
-  FEATURES = %w(close_button auto_refresh).freeze
+  FEATURES = %w(close_button auto_refresh user_theme).freeze
   # The plugin each feature replaces.
   LEGACY_PLUGINS = { 'close_button' => :redmine_close_button, 'auto_refresh' => :redmine_refresh }.freeze
   DEFAULT_INTERVAL = 120
@@ -16,6 +16,14 @@ module RedmineExpertUi
   # (pref[:refresh_status]), the format redmine_refresh used, so every user's
   # current choice carries over. So does pref[:refresh_interval].
   REFRESH_PAGES = { 'issues' => 'index', 'my' => 'page' }.freeze
+  # The cancel guard is switched on per project through this project module.
+  CANCEL_GUARD_MODULE = :expert_ui_cancel_guard
+  # 'random' picks one of the playful styles each time.
+  CANCEL_GUARD_STYLES = %w(confirm dodge slider pour hold shredder random).freeze
+  DEFAULT_CANCEL_GUARD_STYLE = 'confirm'
+  # Issue actions that render the issue form: show (inline), edit, and update
+  # when it re-renders the form after a validation error.
+  CANCEL_GUARD_ACTIONS = %w(show edit update).freeze
 
   module_function
 
@@ -36,7 +44,8 @@ module RedmineExpertUi
 
   # Asked at request time: redmine_refresh sorts after us and registers later.
   def legacy_plugin_installed?(feature)
-    Redmine::Plugin.installed?(legacy_plugin(feature))
+    plugin = legacy_plugin(feature)
+    plugin ? Redmine::Plugin.installed?(plugin) : false
   end
 
   def active?(feature)
@@ -116,5 +125,73 @@ module RedmineExpertUi
       pref[:refresh_status] = status
       pref.save
     end
+  end
+
+  # --- Theme per user ---
+
+  # Redmine has one theme for everybody (Administration » Settings » Display).
+  def global_theme
+    Redmine::Themes.theme(Setting.ui_theme)
+  end
+
+  # Theme ids ticked in the plugin settings; empty means no restriction.
+  def allowed_theme_ids
+    ids = settings['user_theme_choices']
+    ids.is_a?(Array) ? ids.map(&:to_s).reject(&:empty?) : []
+  end
+
+  # The themes a user may pick: the ticked ones, or every installed theme.
+  def selectable_themes
+    allowed = allowed_theme_ids
+    themes = Redmine::Themes.themes
+    allowed.empty? ? themes : themes.select { |theme| allowed.include?(theme.id) }
+  end
+
+  def user_theme_for?(user)
+    active?('user_theme') && !user.nil? && user.logged?
+  end
+
+  # The theme a page is rendered with for this user: their own choice while it
+  # is still installed and on offer, otherwise the global one. Anonymous pages
+  # (login) always get the global theme.
+  def theme_for(user)
+    return global_theme unless user_theme_for?(user)
+
+    id = user.pref[:expert_ui_theme].to_s
+    chosen = selectable_themes.find { |theme| theme.id == id } unless id.empty?
+    chosen || global_theme
+  end
+
+  # --- Cancel guard ---
+
+  # No global switch: the guard runs in the projects that enable its module.
+  def cancel_guard_for?(project)
+    !project.nil? && project.module_enabled?(CANCEL_GUARD_MODULE)
+  end
+
+  def cancel_guard_page?(controller)
+    controller.respond_to?(:controller_name) && controller.controller_name.to_s == 'issues' &&
+      CANCEL_GUARD_ACTIONS.include?(controller.action_name.to_s)
+  end
+
+  # Whether any project uses the guard; only then is the choice offered under
+  # My account.
+  def cancel_guard_in_use?
+    EnabledModule.where(:name => CANCEL_GUARD_MODULE.to_s).exists?
+  end
+
+  def cancel_guard_style?(value)
+    CANCEL_GUARD_STYLES.include?(value.to_s)
+  end
+
+  def cancel_guard_default_style
+    value = settings['cancel_guard_style'].to_s
+    cancel_guard_style?(value) ? value : DEFAULT_CANCEL_GUARD_STYLE
+  end
+
+  # The user's own style (My account) or the one set in the plugin settings.
+  def cancel_guard_style(user)
+    value = user && user.logged? ? user.pref[:expert_ui_cancel_guard_style].to_s : ''
+    cancel_guard_style?(value) ? value : cancel_guard_default_style
   end
 end

@@ -78,4 +78,61 @@ class ExpertUiIssuesControllerTest < Redmine::ControllerTest
     get :index
     assert_select 'script#expert-ui-auto-refresh-config', 0
   end
+
+  def test_show_loads_the_cancel_guard_in_projects_with_its_module
+    enable_cancel_guard(1)
+    get :show, :params => { :id => 1 }
+    assert_response :success
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 1
+    assert_select 'head script[src*="expert_ui_close_button"]', 1
+    assert_select 'head link[rel=stylesheet][href*="/expert_ui"]', 1
+    config = JSON.parse(css_select('script#expert-ui-cancel-guard-config').first.text)
+    assert_equal 'confirm', config['style']
+    assert_equal '/issues/1', config['issuePath']
+    assert_equal ::I18n.t(:button_expert_ui_cancel_guard_keep), config['labels']['keep']
+    assert_equal 3, config['labels']['dodge'].size
+  end
+
+  def test_no_cancel_guard_without_the_module
+    get :show, :params => { :id => 1 }
+    assert_response :success
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 0
+    assert_select 'script#expert-ui-cancel-guard-config', 0
+  end
+
+  def test_no_cancel_guard_in_other_projects
+    enable_cancel_guard(2)
+    get :show, :params => { :id => 1 }
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 0
+  end
+
+  def test_cancel_guard_follows_the_users_style
+    enable_cancel_guard(1)
+    choose_cancel_guard_style(User.find(2), 'pour')
+    get :show, :params => { :id => 1 }
+    config = JSON.parse(css_select('script#expert-ui-cancel-guard-config').first.text)
+    assert_equal 'pour', config['style']
+  end
+
+  def test_cancel_guard_on_the_edit_page_and_after_a_failed_save
+    enable_cancel_guard(1)
+    get :edit, :params => { :id => 1 }
+    assert_response :success
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 1
+
+    put :update, :params => { :id => 1, :issue => { :subject => '', :notes => 'Typed text' } }
+    assert_response :success
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 1
+    assert_select 'textarea#issue_notes', :text => /Typed text/
+  end
+
+  def test_the_cancel_guard_alone_loads_the_stylesheet_once
+    enable_cancel_guard(1)
+    with_ui_settings('close_button_enabled' => '0') do
+      get :show, :params => { :id => 1 }
+    end
+    assert_select 'head script[src*="expert_ui_close_button"]', 0
+    assert_select 'head script[src*="expert_ui_cancel_guard"]', 1
+    assert_select 'head link[rel=stylesheet][href*="/expert_ui"]', 1
+  end
 end

@@ -1,0 +1,27 @@
+<%
+  # Settings of the cancel guard script: the style for this user and every text
+  # it shows. The issue path tells the issue form's Cancel link apart from
+  # other links in that form.
+  issue = @issue
+  config = {
+    :style => RedmineExpertUi.cancel_guard_style(user),
+    :issuePath => (issue && !issue.new_record? ? issue_path(issue) : nil),
+    :labels => {
+      :title => l(:text_expert_ui_cancel_guard_title),
+      :text => l(:text_expert_ui_cancel_guard_text),
+      :keep => l(:button_expert_ui_cancel_guard_keep),
+      :discard => l(:button_expert_ui_cancel_guard_discard),
+      :dodge => [l(:text_expert_ui_cancel_guard_dodge_1), l(:text_expert_ui_cancel_guard_dodge_2),
+                 l(:text_expert_ui_cancel_guard_dodge_3)],
+      :dodgeGiveUp => l(:text_expert_ui_cancel_guard_dodge_give_up),
+      :slider => l(:text_expert_ui_cancel_guard_slider),
+      :pour => l(:text_expert_ui_cancel_guard_pour),
+      :pourHint => l(:text_expert_ui_cancel_guard_pour_hint),
+      :hold => l(:text_expert_ui_cancel_guard_hold),
+      :shredder => l(:text_expert_ui_cancel_guard_shredder),
+      :stop => l(:button_expert_ui_cancel_guard_stop),
+      :saved => l(:text_expert_ui_cancel_guard_saved)
+    }
+  }
+%>
+<%= content_tag(:script, config.to_json.html_safe, :type => 'application/json', :id => 'expert-ui-cancel-guard-config') %>
